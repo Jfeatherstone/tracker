@@ -4,6 +4,8 @@ Ant tracker
 This repository includes the code to load and analyze laboratory ant tracking
 experiments.
 
+![Example trajectory segments](https://raw.githubusercontent.com/Jfeatherstone/tracker/refs/heads/master/example_images/example_segments.png)
+
 Usage
 ---
 
