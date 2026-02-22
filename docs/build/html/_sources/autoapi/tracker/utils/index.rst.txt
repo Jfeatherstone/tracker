@@ -1,0 +1,53 @@
+tracker.utils
+=============
+
+.. py:module:: tracker.utils
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   tracker.utils.SAVE_FORMATS
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   tracker.utils.pltsaveall
+
+
+Module Contents
+---------------
+
+.. py:data:: SAVE_FORMATS
+   :value: ['png', 'svg', 'pdf']
+
+
+.. py:function:: pltsaveall(name)
+
+   
+   A small wrapper around ``matplotlib.pyplot.savefig()`` that saves
+   the plot in multiple formats with tight bounding box.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+

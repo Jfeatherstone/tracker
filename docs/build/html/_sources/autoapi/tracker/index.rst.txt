@@ -1,0 +1,835 @@
+tracker
+=======
+
+.. py:module:: tracker
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/tracker/analysis/index
+   /autoapi/tracker/discretize/index
+   /autoapi/tracker/discretize_old/index
+   /autoapi/tracker/load_data/index
+   /autoapi/tracker/sleap_postprocess/index
+   /autoapi/tracker/utils/index
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   tracker.SAVE_FORMATS
+   tracker.__version__
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   tracker.loadAntData
+   tracker.pltsaveall
+   tracker.discretizeTrajectoryIndices
+   tracker.discretizeTrajectory
+   tracker.discretizeTrajectoryIndices
+   tracker.autocorrelation
+   tracker.computeAngles
+   tracker.exponential
+   tracker.computeRotationalDiffusion
+   tracker.computePersistence
+   tracker.computeMSD
+
+
+Package Contents
+----------------
+
+.. py:function:: loadAntData(inputPath, minimumLength=10, smoothingWindow=10, maximumTimeSkip=10, excludeOutliers=True, excludeShortSegments=True, excludeObjects=False, borderPadding=None, inverseBorderPadding=None, debug=False)
+
+   
+   Load in ant trajectory data, preprocessed by the file ``00_PreprocessData.ipynb``.
+
+   While the SLEAP model that tracks the videos has multiple keypoints,
+   the preprocessing averages those three keypoints to get the center of
+   mass over time. You can explore the individual keypoint trajectories
+   if you would like using the raw sleap files, but they are much more
+   susceptible to discretization and jitter.
+
+   By default, the trajectory is smoothed as discussed in the manuscript.
+   This can be adjusted if you'd like with the ``smoothingWindow`` parameter.
+
+   Gaps in the trajectory are also removed; this can be adjusted by
+   changing the ``maximumTimeSkip`` parameter.
+
+   You can remove parts of the trajectory that are close to the boundary
+   as desired using the ``borderPadding`` or ``inverseBorderPadding`` (for
+   only keeping data around the boundary). The boundary is computed for
+   each individual trajectory.
+
+   If part of a segment goes near the boundary, that segment will be
+   split into multiple pieces to avoid having a large gap(s) in the middle.
+
+   :Parameters:
+
+       **inputPath** : str
+           Path to the input h5 file.
+
+       **minimumLength** : float
+           The minimum length of a segment (in seconds) that will
+           be included in the returned list of segments.
+           
+           Only has an effect if `excludeShortSegments=True`.
+           
+           Note that this value is given in *seconds*, or whatever the native
+           unit of time for the trajectory is.
+
+       **smoothingWindow** : int
+           The size of the smoothing window applied to the trajectory
+           data.
+           
+           Note that this value is given in *frames* (or steps, indices, etc.),
+           not the native time unit of the trajectories.
+
+       **maximumTimeSkip** : int
+           The maximum amount of frames that are allowed to be skipped
+           without breaking up a trajectory into multiple pieces. Note
+           that this value is given in *frames* (or steps, indices, etc.),
+           not the native time unit of the trajectories.
+
+       **excludeOutliers** : bool
+           Whether to exclude trials annotated as an outlier during the
+           preprocessing. For more information on why trials might be
+           annotated as an outlier, see file `00_PreprocessData.ipynb`.
+
+       **excludeShortSegments** : bool
+           Whether to apply the provided value of `minimumLength` as a
+           cutoff for the length of segments.
+
+       **excludeObjects** : bool
+           Whether to exclude trials that had an object in the enclosure, 
+           including food, water, etc.
+
+       **borderPadding** : float, optional
+           The size of padding around the borders of the arena to ignore.
+           If a segment is partly contained in this region, only the points
+           which actually fall in the region are deleted.
+           
+           Be careful when calculating speeds, angle turns, etc., as you will
+           have to make sure to ignore the times when the process jumps. The
+           array `timeArr` can be used to determine when this is necessary.
+
+       **inverseBorderPadding** : float, optional
+           The size of padding around the borders of the arena to keep.
+           Any points that are part of a segment that deviate from this
+           region will be deleted, keeping only the trajectories near the
+           boundary.
+           
+           Be careful when calculating speeds, angle turns, etc., as you will
+           have to make sure to ignore the times when the process jumps. The
+           array `timeArr` can be used to determine when this is necessary.
+
+       **debug** : bool
+           Whether to show progress bars during the loading process.
+
+
+
+   :Returns:
+
+       **dataArr** : list of np.array[N_i, 2]
+           The list of positions of the ant throughout time for each segment.
+
+       **timeArr** : list of np.array[N_i]
+           The list of time points at which each position in dataArr[i] is
+           sampled. The first data point is the actual time within
+           the original video at which this trajectory starts, and thus can
+           be used to determine the order of segments within a trial.
+
+       **metadataArr** : list of dict
+           The dictionaries containing metadata information about the tracking
+           procedure, experimental conditions, and preprocessing steps for
+           each segment.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: SAVE_FORMATS
+   :value: ['png', 'svg', 'pdf']
+
+
+.. py:function:: pltsaveall(name)
+
+   
+   A small wrapper around ``matplotlib.pyplot.savefig()`` that saves
+   the plot in multiple formats with tight bounding box.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: discretizeTrajectoryIndices(trajectoryArr, c=1, velocityThreshold=1, dt=1, minSteps=1, minDistancePerRun=0, debug=False)
+
+   
+   Discretize a trajectory as if it were a run-and-tumble process,
+   with waiting times before each tumble. Return the indices of
+   the run or waiting time to which each point in the original trajectory
+   belongs.
+
+   Trajectories are first segmented by finding regions where the
+   trajectory has very low velocity (so the process is probably
+   standing still). Then, each of these segments is split based
+   on orientation to get relatively straight runs. Afterwards, we do
+   some clean up to make sure the detected runs actually seem like runs.
+
+   The process of discretizing a continuous trajectory (even if it is
+   discretly sampled) is very subjective, and care should be taken
+   to justify the choices of parameters for this discretization
+   algorithm.
+
+   :Parameters:
+
+       **trajectoryArr** : numpy.ndarray[N,2]
+           The points along the trajectory.
+
+       **c** : float
+           The colinearity threshold used to decide where to split the
+           trajectory to form straight runs. The colinearity is defined
+           as the dot product between two unit vectors, so can take a
+           value in the range [-1, 1].
+           
+           Note that any new step of the trajectory is compared against
+           the *mean* direction vector of the current run, to decide if
+           it is added to that run or if it should start a new one. Some
+           works often just compare the new direction vector to the previous
+           one, but this is more susceptible to give unrepresentative
+           discretizations in the presence of noise. Some works refer to this
+           as a "nonlocal" technique [eg. 1].
+           
+           If you'd rather define the threshold in terms of an angle instead
+           of a scalar, your colinearity threshold will be:
+           
+               c = cos(theta)
+           
+           where theta is the critical angle.
+
+       **velocityThreshold** : float
+           The velocity threshold used to identify when the process is waiting,
+           or not moving. The velocity is slightly smoothed before being
+           compared to the threshold, to avoid missing waiting times because
+           of instantaneous jitter in the middle of an otherwise stationary
+           period.
+
+       **dt** : float
+           The time interval between steps in the original trajectory. Used
+           to calculate the velocity.
+
+       **minSteps** : int
+           The minimum number of steps that must be going in roughly the same
+           direction to constitute a run.
+
+       **minDistancePerRun** : float
+           The minimum distance a run must measure from beginning point to 
+           end point in order for it to be considered an actual run and not
+           just a wait time that happens to be drifting.
+
+       **debug** : bool
+           Whether to plot debug information; helpful to deciding on good
+           parameter values.
+
+
+
+   :Returns:
+
+       **runIntervals** : numpy.ndarray[M,2]
+           The indices of the start ([:,0]) and end ([:,1]) of each discrete
+           run.
+
+       **waitingTimes** : numpy.ndarray[L,2]
+           The indices of the start ([:,0]) and end ([:,1]) of each discrete
+           waiting time.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   [1] Reynolds, A. M., Smith, A. D., Menzel, R., Greggers, U., Reynolds,
+   D. R., & Riley, J. R. (2007). Displaced Honey Bees Perform Optimal
+   Scale-Free Search Flights. Ecology, 88(8), 1955–1961.
+   https://doi.org/10.1890/06-1916.1
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: discretizeTrajectory(trajectoryArr, c=1, velocityThreshold=1, dt=1, minSteps=1, minDistancePerRun=0, debug=False)
+
+   
+   Discretize a trajectory into straight runs and waiting times.
+
+   See also `discretizeTrajectoryIndices()` for more information about
+   the discretization process.
+
+   The trajectory is constructed by taking the average between the
+   start and end of successive trajectories; this is required since the
+   trajectory might drift slightly during the wait time.
+
+   :Parameters:
+
+       **trajectoryArr** : numpy.ndarray[N,2]
+           The points along the trajectory.
+
+       **c** : float
+           The colinearity threshold used to decide where to split the
+           trajectory to form straight runs. The colinearity is defined
+           as the dot product between two unit vectors, so can take a
+           value in the range [-1, 1].
+           
+           Note that any new step of the trajectory is compared against
+           the *mean* direction vector of the current run, to decide if
+           it is added to that run or if it should start a new one. Some
+           works often just compare the new direction vector to the previous
+           one, but this is more susceptible to give unrepresentative
+           discretizations in the presence of noise. Some works refer to this
+           as a "nonlocal" technique [eg. 1].
+           
+           If you'd rather define the threshold in terms of an angle instead
+           of a scalar, your colinearity threshold will be:
+           
+               cos(theta)
+           
+           where theta is the critical angle.
+
+       **velocityThreshold** : float
+           The velocity threshold used to identify when the process is waiting,
+           or not moving. The velocity is slightly smoothed before being
+           compared to the threshold, to avoid missing waiting times because
+           of instantaneous jitter in the middle of an otherwise stationary
+           period.
+
+       **dt** : float
+           The time interval between steps in the original trajectory. Used
+           to calculate the velocity.
+
+       **minSteps** : int
+           The minimum number of steps that must be going in roughly the same
+           direction to constitute a run.
+
+       **minDistancePerRun** : float
+           The minimum distance a run must measure from beginning point to 
+           end point in order for it to be considered an actual run and not
+           just a wait time that happens to be drifting.
+
+
+
+   :Returns:
+
+       **discreteTrajectoryArr** : numpy.ndarray[M,2]
+           The new points of the discretized trajectory.
+
+       **waitingTimeArr** : numpy.ndarray[M]
+           The time spent waiting in between each run.
+
+       **runTimeArr** : numpy.ndarray[M-1]
+           The time spent moving during each run.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   [1] Reynolds, A. M., Smith, A. D., Menzel, R., Greggers, U., Reynolds,
+   D. R., & Riley, J. R. (2007). Displaced Honey Bees Perform Optimal
+   Scale-Free Search Flights. Ecology, 88(8), 1955–1961.
+   https://doi.org/10.1890/06-1916.1
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: discretizeTrajectoryIndices(trajectoryArr, c=1, velocityThreshold=1, dt=1, minSteps=1, minDistancePerRun=0, debug=False)
+
+   
+   Discretize a trajectory as if it were a run-and-tumble process,
+   with waiting times before each tumble. Return the indices of
+   the run or waiting time to which each point in the original trajectory
+   belongs.
+
+   Trajectories are first segmented by finding regions where the
+   trajectory has very low velocity (so the process is probably
+   standing still). Then, each of these segments is split based
+   on orientation to get relatively straight runs. Afterwards, we do
+   some clean up to make sure the detected runs actually seem like runs.
+
+   The process of discretizing a continuous trajectory (even if it is
+   discretly sampled) is very subjective, and care should be taken
+   to justify the choices of parameters for this discretization
+   algorithm.
+
+   :Parameters:
+
+       **trajectoryArr** : numpy.ndarray[N,2]
+           The points along the trajectory.
+
+       **c** : float
+           The colinearity threshold used to decide where to split the
+           trajectory to form straight runs. The colinearity is defined
+           as the dot product between two unit vectors, so can take a
+           value in the range [-1, 1].
+           
+           Note that any new step of the trajectory is compared against
+           the *mean* direction vector of the current run, to decide if
+           it is added to that run or if it should start a new one. Some
+           works often just compare the new direction vector to the previous
+           one, but this is more susceptible to give unrepresentative
+           discretizations in the presence of noise. Some works refer to this
+           as a "nonlocal" technique [eg. 1].
+           
+           If you'd rather define the threshold in terms of an angle instead
+           of a scalar, your colinearity threshold will be:
+           
+               c = cos(theta)
+           
+           where theta is the critical angle.
+
+       **velocityThreshold** : float
+           The velocity threshold used to identify when the process is waiting,
+           or not moving. The velocity is slightly smoothed before being
+           compared to the threshold, to avoid missing waiting times because
+           of instantaneous jitter in the middle of an otherwise stationary
+           period.
+
+       **dt** : float
+           The time interval between steps in the original trajectory. Used
+           to calculate the velocity.
+
+       **minSteps** : int
+           The minimum number of steps that must be going in roughly the same
+           direction to constitute a run.
+
+       **minDistancePerRun** : float
+           The minimum distance a run must measure from beginning point to 
+           end point in order for it to be considered an actual run and not
+           just a wait time that happens to be drifting.
+
+       **debug** : bool
+           Whether to plot debug information; helpful to deciding on good
+           parameter values.
+
+
+
+   :Returns:
+
+       **runIntervals** : numpy.ndarray[M,2]
+           The indices of the start ([:,0]) and end ([:,1]) of each discrete
+           run.
+
+       **waitingTimes** : numpy.ndarray[L,2]
+           The indices of the start ([:,0]) and end ([:,1]) of each discrete
+           waiting time.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   [1] Reynolds, A. M., Smith, A. D., Menzel, R., Greggers, U., Reynolds,
+   D. R., & Riley, J. R. (2007). Displaced Honey Bees Perform Optimal
+   Scale-Free Search Flights. Ecology, 88(8), 1955–1961.
+   https://doi.org/10.1890/06-1916.1
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: autocorrelation(x, minLag=0, maxLag=100, dt=1, dtau=1, normalize=True)
+
+   
+   Compute the autocorrelation of some vector.
+
+   :math:`\langle x(t) x(t + \tau) \rangle`
+
+   :Parameters:
+
+       **x** : numpy.ndarray[N]
+           The vector to compute the autocorrelation for.
+
+       **minLag** : float
+           The minimum lag to compute, in the same units as `dt`.
+
+       **maxLag** : float
+           The maximum lag to compute, in the same units as `dt`.
+
+       **dt** : float
+           The time difference between each point in `x`.
+
+       **dtau** : float
+           The interval at which to sample the autocorrelation, in the same
+           units as `dt`.
+
+       **normalize** : bool
+           Whether to normalize the autocorrelation values by the first
+           entry.
+
+
+
+   :Returns:
+
+       **lagArr** : numpy.ndarray[M]
+           The time lags for which the autocorrelation is computed.
+
+       **autocorr** : numpy.ndarray[M]
+           The autocorrelation at each time lag.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: computeAngles(trajectory, dt=1, minVelocityThreshold=0)
+
+   
+   Compute the angle difference (turn angles) throughout a 2D trajectory.
+
+   This does not necessarily maintain the same indexing as the input trajectory,
+   since it is primarily for compute distributions and statistics.
+
+   :Parameters:
+
+       **trajectory** : numpy.ndarray[N,2]
+           The trajectory to compute the angles for.
+
+       **dt** : float, optional
+           The time different between each point in the trajectory. Used to compute
+           the velocity and threshold based on ``minVelocityThreshold``.
+
+       **minVelocityThreshold** : float, optional
+           The velocity threshold below which an angle won't be included in
+           the final array of angles. Useful since you may see huge angle changes
+           which are actually just jitter if the trajectory remains (nearly) stationary
+           for some period of time.
+
+
+
+   :Returns:
+
+       **angles** : numpy.ndarray[M]
+           All of the (valid) turn angles throughout the trajectory.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: exponential(x, x0, A)
+
+   
+   Exponential function used in fitting the rotational diffusion and/or
+   persistence time.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: computeRotationalDiffusion(trajectory, c, v, minStepsPerRun, minDistancePerRun, t=None, minLag=0, maxLag=2, dtau=0.1)
+
+   
+   Compute the rotational diffusion coefficient, assuming
+   that the trajectory data follows a run-and-tumble scheme.
+
+   This is done by discretizing the trajectory as a run-and-tumble,
+   then computing the autocorrelation of just the runs. Since each
+   individual run might not have enough data to fit by itself, the
+   data from all runs are pooled together.
+
+   :Parameters:
+
+       **trajectory** : numpy.ndarray[N,2] or list of numpy.ndarray[N,2]
+           The trajectory to compute the rotational diffusion coefficient
+           for.
+           
+           Can also be a list of disjoint segments representing the same
+           trajectory (for example, if there are gaps in a trajectory that
+           should be avoided in calculate the persistence, but you want
+           to average over the entire collection of segments).
+
+       **theta** : float
+           The angle threshold parameter used for discretizing the
+           trajectory, in radians.
+
+       **v** : float
+           The velocity threshold parameter used for discretizing the
+           trajectory.
+
+       **minStepsPerRun** : int
+           The minimum number of steps per run for discretizing the
+           trajectory.
+
+       **minDistancePerRun** : float
+           The minimum distance per run for discretizing the
+           trajectory. Given in whatever units ``trajectory`` is given in.
+
+       **t** : float or numpy.ndarray[N,2] or list of numpy.ndarray[N,2], optional
+           The time points at which the data is sampled. If all samples are
+           evenly spaced, can be a single float representing the time difference.
+           
+           If ``trajectory`` is given as a list of segments, this should be structured
+           similarly.
+           
+           If not given, all samples will be assumed to be spaced evenly, and ``v`` will
+           be given in units of distance/frames (where the distance unit is whatever
+           the units of ``trajectory`` are.
+
+       **minLag** : float
+           The minimum time lag to compute the autocorrelation for, given in the
+           same units as ``t``.
+
+       **maxLag** : float
+           The max time lag to compute the autocorrelation for, given in the same units as ``t``.
+
+       **dtau** : float
+           The spacing between sampled time lags to compute the rotational diffusion
+           using, given in the same units as ``t``.
+
+
+
+   :Returns:
+
+       **Dr** : float or numpy.nan
+           The rotational diffusion coefficient computed by pooling the autocorrelation
+           data for all of the trajectories. If fitting failed or some other issue
+           arose, ``np.nan`` will be returned.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: computePersistence(trajectory, v, t=None, minLag=0, maxLag=2, dtau=0.1)
+
+   
+   Compute the rotational diffusion coefficient, assuming
+   that the trajectory data follows a run-and-tumble scheme.
+
+   This is done by discretizing the trajectory as a run-and-tumble,
+   then computing the autocorrelation of just the runs. Since each
+   individual run might not have enough data to fit by itself, the
+   data from all runs are pooled together.
+
+   :Parameters:
+
+       **trajectory** : numpy.ndarray[N,2] or list of numpy.ndarray[N,2]
+           The trajectory to compute the rotational diffusion coefficient
+           for.
+           
+           Can also be a list of disjoint segments representing the same
+           trajectory (for example, if there are gaps in a trajectory that
+           should be avoided in calculate the persistence, but you want
+           to average over the entire collection of segments).
+
+       **t** : float or numpy.ndarray[N,2] or list of numpy.ndarray[N,2], optional
+           The time points at which the data is sampled. If all samples are
+           evenly spaced, can be a single float representing the time difference.
+           
+           If ``trajectory`` is given as a list of segments, this should be structured
+           similarly.
+           
+           If not given, all samples will be assumed to be spaced evenly, and ``v`` will
+           be given in units of distance/frames (where the distance unit is whatever
+           the units of ``trajectory`` are.
+
+       **minLag** : float
+           The minimum time lag to compute the autocorrelation for, given in the
+           same units as ``t``.
+
+       **maxLag** : float
+           The max time lag to compute the autocorrelation for, given in the same units as ``t``.
+
+       **dtau** : float
+           The spacing between sampled time lags to compute the rotational diffusion
+           using, given in the same units as ``t``.
+
+
+
+   :Returns:
+
+       **persistence** : float or numpy.nan
+           The persistence time computed by pooling the autocorrelation data for
+           all of the trajectories. If fitting failed or some other issue arose,
+           ``np.nan`` will be returned.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: computeMSD(trajectory, t=None, minLag=0, maxLag=30, nbins=30, logbins=True)
+
+   
+   Compute the mean-squared displacement of a trajectory as a function of
+   the time lag between samples.
+
+   Slightly more complicated than one might expect, since we might have
+   time jumps in the sampling, and we want to be able to count those properly.
+
+   :Parameters:
+
+       **trajectory** : numpy.ndarray[N,2] or list of numpy.ndarray[N,2]
+           The trajectory to compute the rotational diffusion coefficient
+           for.
+           
+           Can also be a list of disjoint segments representing the same
+           trajectory (for example, if there are gaps in a trajectory that
+           should be avoided in calculate the persistence, but you want
+           to average over the entire collection of segments).
+
+       **t** : float or numpy.ndarray[N,2] or list of numpy.ndarray[N,2], optional
+           The time points at which the data is sampled. If all samples are
+           evenly spaced, can be a single float representing the time difference.
+           
+           If ``trajectory`` is given as a list of segments, this should be structured
+           similarly.
+           
+           If not given, all samples will be assumed to be spaced evenly.
+
+       **minLag** : float
+           The minimum time lag to compute the MSD for, given in the
+           same units as ``t``.
+
+       **maxLag** : float
+           The max time lag to compute the MSD for, given in the same units as ``t``.
+
+       **nbins** : int
+           The number of time lags to sample in the specified range.
+
+       **logbins** : bool
+           Whether to space the time lags linearly (False) or logarithmically
+           (True).
+
+
+
+   :Returns:
+
+       **tArr** : numpy.ndarray[nbins]
+           The time lags the MSD is computed for
+
+       **msdArr** : numpy.ndarray[nbins]
+           The MSD for each time lag, averaged across all trajectories provided.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: __version__
+   :value: '0.1.0'
+
+

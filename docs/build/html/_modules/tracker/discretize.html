@@ -1,0 +1,765 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>tracker.discretize - tracker 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_collapse.css?v=226d88b4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/overrides.css?v=e9ec496f" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">tracker 0.1.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  
+  <span class="sidebar-brand-text">tracker 0.1.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials_top.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/environment_setup.html">Setup your environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/sleap_training.html">SLEAP training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/sleap_tracking_postprocessing.html">SLEAP tracking and postprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/loading_data.html">Loading data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/tracker/index.html">tracker</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of tracker</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/tracker/analysis/index.html">tracker.analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/tracker/discretize/index.html">tracker.discretize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/tracker/discretize_old/index.html">tracker.discretize_old</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/tracker/load_data/index.html">tracker.load_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/tracker/sleap_postprocess/index.html">tracker.sleap_postprocess</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/tracker/utils/index.html">tracker.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for tracker.discretize</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">savgol_filter</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<div class="viewcode-block" id="discretizeTrajectoryIndices">
+<a class="viewcode-back" href="../../autoapi/tracker/index.html#tracker.discretize.discretizeTrajectoryIndices">[docs]</a>
+<span class="k">def</span> <span class="nf">discretizeTrajectoryIndices</span><span class="p">(</span><span class="n">trajectoryArr</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">velocityThreshold</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">minSteps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">minDistancePerRun</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Discretize a trajectory as if it were a run-and-tumble process,</span>
+<span class="sd">    with waiting times before each tumble. Return the indices of</span>
+<span class="sd">    the run or waiting time to which each point in the original trajectory</span>
+<span class="sd">    belongs.</span>
+
+<span class="sd">    Trajectories are first segmented by finding regions where the</span>
+<span class="sd">    trajectory has very low velocity (so the process is probably</span>
+<span class="sd">    standing still). Then, each of these segments is split based</span>
+<span class="sd">    on orientation to get relatively straight runs. Afterwards, we do</span>
+<span class="sd">    some clean up to make sure the detected runs actually seem like runs.</span>
+
+<span class="sd">    The process of discretizing a continuous trajectory (even if it is</span>
+<span class="sd">    discretly sampled) is very subjective, and care should be taken</span>
+<span class="sd">    to justify the choices of parameters for this discretization</span>
+<span class="sd">    algorithm.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    trajectoryArr : numpy.ndarray[N,2]</span>
+<span class="sd">        The points along the trajectory.</span>
+
+<span class="sd">    c : float</span>
+<span class="sd">        The colinearity threshold used to decide where to split the</span>
+<span class="sd">        trajectory to form straight runs. The colinearity is defined</span>
+<span class="sd">        as the dot product between two unit vectors, so can take a</span>
+<span class="sd">        value in the range [-1, 1].</span>
+
+<span class="sd">        Note that any new step of the trajectory is compared against</span>
+<span class="sd">        the *mean* direction vector of the current run, to decide if</span>
+<span class="sd">        it is added to that run or if it should start a new one. Some</span>
+<span class="sd">        works often just compare the new direction vector to the previous</span>
+<span class="sd">        one, but this is more susceptible to give unrepresentative</span>
+<span class="sd">        discretizations in the presence of noise. Some works refer to this</span>
+<span class="sd">        as a &quot;nonlocal&quot; technique [eg. 1].</span>
+
+<span class="sd">        If you&#39;d rather define the threshold in terms of an angle instead</span>
+<span class="sd">        of a scalar, your colinearity threshold will be:</span>
+
+<span class="sd">            c = cos(theta)</span>
+
+<span class="sd">        where theta is the critical angle.</span>
+
+<span class="sd">    velocityThreshold : float</span>
+<span class="sd">        The velocity threshold used to identify when the process is waiting,</span>
+<span class="sd">        or not moving. The velocity is slightly smoothed before being</span>
+<span class="sd">        compared to the threshold, to avoid missing waiting times because</span>
+<span class="sd">        of instantaneous jitter in the middle of an otherwise stationary</span>
+<span class="sd">        period.</span>
+
+<span class="sd">    dt : float</span>
+<span class="sd">        The time interval between steps in the original trajectory. Used</span>
+<span class="sd">        to calculate the velocity.</span>
+
+<span class="sd">    minSteps : int</span>
+<span class="sd">        The minimum number of steps that must be going in roughly the same</span>
+<span class="sd">        direction to constitute a run.</span>
+
+<span class="sd">    minDistancePerRun : float</span>
+<span class="sd">        The minimum distance a run must measure from beginning point to </span>
+<span class="sd">        end point in order for it to be considered an actual run and not</span>
+<span class="sd">        just a wait time that happens to be drifting.</span>
+
+<span class="sd">    debug : bool</span>
+<span class="sd">        Whether to plot debug information; helpful to deciding on good</span>
+<span class="sd">        parameter values.</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    runIntervals : numpy.ndarray[M,2]</span>
+<span class="sd">        The indices of the start ([:,0]) and end ([:,1]) of each discrete</span>
+<span class="sd">        run.</span>
+
+<span class="sd">    waitingTimes : numpy.ndarray[L,2]</span>
+<span class="sd">        The indices of the start ([:,0]) and end ([:,1]) of each discrete</span>
+<span class="sd">        waiting time.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Reynolds, A. M., Smith, A. D., Menzel, R., Greggers, U., Reynolds,</span>
+<span class="sd">    D. R., &amp; Riley, J. R. (2007). Displaced Honey Bees Perform Optimal</span>
+<span class="sd">    Scale-Free Search Flights. Ecology, 88(8), 1955–1961.</span>
+<span class="sd">    https://doi.org/10.1890/06-1916.1</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">angleThreshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+    <span class="c1"># This array identifies which &quot;segment&quot; a point belongs to, which are defined</span>
+    <span class="c1"># by velocity thresholding</span>
+    <span class="c1"># Value of nan means it has not been assigned yet</span>
+    <span class="n">segmentIdentityArr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trajectoryArr</span><span class="p">))</span>
+    <span class="n">segmentIdentityArr</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="c1"># This array identifies which &quot;run&quot; a point belongs to, which are defined</span>
+    <span class="c1"># by orientation thresholding (within each segment)</span>
+    <span class="c1"># Value of nan means it has not been assigned yet</span>
+    <span class="n">runIdentityArr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trajectoryArr</span><span class="p">))</span>
+    <span class="n">runIdentityArr</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="c1"># We will need the step sizes (in the measured frame)</span>
+    <span class="c1"># to weight the contributions to the overall run direction</span>
+    <span class="n">originalStepDirectionArr</span> <span class="o">=</span> <span class="n">trajectoryArr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">trajectoryArr</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">originalStepSizeArr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">trajectoryArr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">trajectoryArr</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="c1"># This will have length one less than trajectory arr, so we add a zero value at the beginning</span>
+    <span class="c1"># so it can be indexed the same.</span>
+    <span class="n">originalStepSizeArr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">originalStepSizeArr</span><span class="p">))</span>
+    <span class="c1"># Note that the step sizes also double as the velocity (we just add</span>
+    <span class="c1"># a factor of dt, which is optional, so potentially could be exactly the same)</span>
+    <span class="n">velocityArr</span> <span class="o">=</span> <span class="n">originalStepSizeArr</span> <span class="o">/</span> <span class="n">dt</span>
+
+    <span class="c1"># That being said, we do smooth the velocity slightly since it</span>
+    <span class="c1"># helps with identfying regions with average low velocity</span>
+    <span class="n">velocityArr</span> <span class="o">=</span> <span class="n">savgol_filter</span><span class="p">(</span><span class="n">velocityArr</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+   
+    <span class="c1"># Compute the orientation (angle) of the walker at each step.</span>
+    <span class="n">absoluteAngleArr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">originalStepDirectionArr</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">originalStepDirectionArr</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">))))</span>
+
+    <span class="c1"># This array identifies whether points are waiting times or run times.</span>
+    <span class="n">isWaitingTimeArr</span> <span class="o">=</span> <span class="p">(</span><span class="n">velocityArr</span> <span class="o">&lt;</span> <span class="n">velocityThreshold</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="c1"># First, we need to identify segments based on velocity thresholding.</span>
+    <span class="c1"># This means assigning each point in the trajectory to a segment, and</span>
+    <span class="c1"># deciding if it is a waiting time or a run.</span>
+    <span class="n">segmentIdentityArr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">currentCount</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">trajectoryArr</span><span class="p">)):</span>
+        <span class="c1"># We need minSteps points in a row that have velocity</span>
+        <span class="c1"># lower than the threshold</span>
+        <span class="k">if</span> <span class="n">velocityArr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">velocityThreshold</span><span class="p">:</span>
+            <span class="n">currentCount</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">currentCount</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="n">currentCount</span> <span class="o">==</span> <span class="n">minSteps</span><span class="p">:</span>
+            <span class="c1"># Add a new segment, and change the last minSteps entries since</span>
+            <span class="c1"># they were actually a part of this segment.</span>
+            <span class="n">previousSegmentIndex</span> <span class="o">=</span> <span class="n">segmentIdentityArr</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">minSteps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># If this is the first segment, this index will be nan, so we</span>
+            <span class="c1"># should use 0 instead</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">previousSegmentIndex</span><span class="p">):</span>
+                <span class="n">previousSegmentIndex</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">minSteps</span><span class="p">):</span>
+                <span class="n">segmentIdentityArr</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">previousSegmentIndex</span> <span class="o">+</span> <span class="mi">1</span>
+                
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Continue the current segment</span>
+            <span class="n">segmentIdentityArr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">segmentIdentityArr</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Since picking parameters for this method should be done with care,</span>
+    <span class="c1"># we have very detailed debug plots.</span>
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">8.5</span><span class="p">,</span><span class="mf">3.5</span><span class="p">))</span>
+        <span class="c1"># Plot the velocity</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">velocityArr</span> <span class="o">&lt;</span> <span class="n">velocityThreshold</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                      <span class="n">velocityArr</span><span class="p">[</span><span class="n">velocityArr</span> <span class="o">&lt;=</span> <span class="n">velocityThreshold</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;tab:orange&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">velocityArr</span> <span class="o">&gt;=</span> <span class="n">velocityThreshold</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                      <span class="n">velocityArr</span><span class="p">[</span><span class="n">velocityArr</span> <span class="o">&gt;=</span> <span class="n">velocityThreshold</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;tab:blue&#39;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">velocityThreshold</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Velocity&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Plot the absolute angle over time, separating when the velocity</span>
+        <span class="c1"># is above or below the threshold</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">velocityArr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">&lt;=</span> <span class="n">velocityThreshold</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                 <span class="n">absoluteAngleArr</span><span class="p">[</span><span class="n">velocityArr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">&lt;=</span> <span class="n">velocityThreshold</span><span class="p">],</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;tab:orange&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Below velocity threshold&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">velocityArr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">&gt;</span> <span class="n">velocityThreshold</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                 <span class="n">absoluteAngleArr</span><span class="p">[</span><span class="n">velocityArr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">&gt;</span> <span class="n">velocityThreshold</span><span class="p">],</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Above velocity threshold&#39;</span><span class="p">)</span>
+
+        <span class="c1">#ax[1].legend()</span>
+        <span class="c1"># Plot the segment identities as well</span>
+        <span class="n">dualAx</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+        <span class="n">dualAx</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">segmentIdentityArr</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Absolute Angle&#39;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+    <span class="c1"># Now we want to identify runs within each segment by using the angle</span>
+    <span class="c1"># threshold.</span>
+    <span class="c1"># We first should identify the intervals of each segment, from our</span>
+    <span class="c1"># list of which segment each point belongs to</span>
+    <span class="n">segmentIntervals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">segmentIdentityArr</span> <span class="o">==</span> <span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">segmentIdentityArr</span> <span class="o">==</span> <span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">])]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">segmentIdentityArr</span><span class="p">)])</span>
+    <span class="c1"># This above list has entries [[start_1, end_1], [start_2, end_2], etc.]</span>
+   
+    <span class="n">runIdentityArr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">segmentIntervals</span><span class="p">)):</span>
+        <span class="c1"># We need to look at the previous point in identifying the runs,</span>
+        <span class="c1"># so we need to start 1 (if we don&#39;t already)</span>
+        <span class="n">startIndex</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">segmentIntervals</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">endIndex</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trajectoryArr</span><span class="p">),</span> <span class="n">segmentIntervals</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        
+        <span class="c1"># Iterate over the indices that are associated with this segment</span>
+        <span class="c1"># We need the +1 on the second value because python&#39;s range(x,y) only</span>
+        <span class="c1"># goes up to y-1</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">startIndex</span><span class="p">,</span> <span class="n">endIndex</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">isWaitingTimeArr</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Check if this point fits in with the current run</span>
+            <span class="n">currentRunIndices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">runIdentityArr</span> <span class="o">==</span> <span class="n">runIdentityArr</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+          
+            <span class="c1"># If there are no points in the current run, ie. this is the</span>
+            <span class="c1"># first one, then we of course have to start a new run.</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">currentRunIndices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">runIdentityArr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">runIdentityArr</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Compute the average direction the current run is going</span>
+            <span class="c1"># -1 because originalStepDirectionArr has a length of 1 less than</span>
+            <span class="c1"># the actual trajectory (or runIdentityArr) so we need to </span>
+            <span class="c1"># subtract 1 to index the same entry.</span>
+            <span class="n">currentRunDirection</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">originalStepDirectionArr</span><span class="p">[</span><span class="n">currentRunIndices</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+                                             <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+            <span class="n">currentRunDirection</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">currentRunDirection</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+            <span class="n">currentStepDirection</span> <span class="o">=</span> <span class="n">originalStepDirectionArr</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">originalStepSizeArr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+    
+            <span class="c1"># Now compute the difference in angle between the current direction</span>
+            <span class="c1"># and the current run</span>
+            <span class="n">angleDiff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">currentStepDirection</span><span class="p">,</span> <span class="n">currentRunDirection</span><span class="p">)</span>
+    
+            <span class="c1"># If we are above the colinearity threshold, this point joins</span>
+            <span class="c1"># the current run.</span>
+            <span class="k">if</span> <span class="n">angleDiff</span> <span class="o">&gt;=</span> <span class="n">c</span><span class="p">:</span>
+                <span class="n">runIdentityArr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">runIdentityArr</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># Otherwise we start a new run.</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">runIdentityArr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">runIdentityArr</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            
+        <span class="k">if</span> <span class="n">runIdentityArr</span><span class="p">[</span><span class="n">endIndex</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">runIdentityArr</span><span class="p">[</span><span class="n">endIndex</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">runIdentityArr</span><span class="p">)</span>
+
+    <span class="c1"># Now we compute the length of each run (time, not space)</span>
+    <span class="c1"># by counting how many steps are included</span>
+    <span class="n">uniqueRuns</span><span class="p">,</span> <span class="n">runStepsArr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">runIdentityArr</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Now we have to compute waiting times between runs.</span>
+    <span class="c1"># Any run that is shorter than the threshold minStepsPerRun</span>
+    <span class="c1"># is considered to be a waiting time.</span>
+    <span class="n">waitingTimeIntervals</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">properRunIntervals</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">inWaitingTime</span> <span class="o">=</span> <span class="kc">False</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">uniqueRuns</span><span class="p">)):</span>
+        <span class="c1"># To see if this is a valid run or not, we need to</span>
+        <span class="c1"># check two conditions:</span>
+        <span class="c1"># 1: that the run contains more than minStepsPerRun discrete</span>
+        <span class="c1"># steps.</span>
+        <span class="c1"># 2. that the run travels a distance ( |end - start| distance)</span>
+        <span class="c1"># more than minDistancePerRun.</span>
+
+        <span class="c1"># These are the indices in the original trajectoryArr that are</span>
+        <span class="c1"># part of this run.</span>
+        <span class="n">originalIndices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">runIdentityArr</span> <span class="o">==</span> <span class="n">uniqueRuns</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Make sure we have enough points to constitute a run.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">originalIndices</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">minSteps</span><span class="p">:</span>
+            <span class="n">startIndex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">originalIndices</span><span class="p">)</span>
+            <span class="n">endIndex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">originalIndices</span><span class="p">)</span>
+
+            <span class="n">runLength</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">trajectoryArr</span><span class="p">[</span><span class="n">endIndex</span><span class="p">]</span> <span class="o">-</span> <span class="n">trajectoryArr</span><span class="p">[</span><span class="n">startIndex</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+            <span class="c1"># Make sure we travel enough distance to constitute a run.</span>
+            <span class="k">if</span> <span class="n">runLength</span> <span class="o">&gt;=</span> <span class="n">minDistancePerRun</span><span class="p">:</span>
+                <span class="n">inWaitingTime</span> <span class="o">=</span> <span class="kc">False</span>
+                
+                <span class="c1"># Save the indices (of the original set of points, trajectoryArr)</span>
+                <span class="c1"># of the start and end of the run</span>
+                <span class="n">properRunIntervals</span> <span class="o">+=</span> <span class="p">[[</span><span class="n">startIndex</span><span class="p">,</span> <span class="n">endIndex</span><span class="p">]]</span>
+
+        <span class="c1"># Otherwise, we are in a waiting time, which we will organize</span>
+        <span class="c1"># after we&#39;ve identified all of the runs.</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">properRunIntervals</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+
+    <span class="c1"># Add the waiting times in</span>
+    <span class="n">waitingTimeIntervals</span> <span class="o">=</span> <span class="p">[[</span><span class="n">properRunIntervals</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">properRunIntervals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">properRunIntervals</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+
+    <span class="c1"># Add a waiting time at the beginning if the first run doesn&#39;t start</span>
+    <span class="c1"># immediately</span>
+    <span class="k">if</span> <span class="n">properRunIntervals</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">waitingTimeIntervals</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="n">properRunIntervals</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]]</span> <span class="o">+</span> <span class="n">waitingTimeIntervals</span>
+
+    <span class="c1"># Add a waiting time at the end if the last run doesn&#39;t end just at the</span>
+    <span class="c1"># end of the real trajectory</span>
+    <span class="k">if</span> <span class="n">properRunIntervals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">trajectoryArr</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">waitingTimeIntervals</span> <span class="o">=</span> <span class="n">waitingTimeIntervals</span> <span class="o">+</span> <span class="p">[[</span><span class="n">properRunIntervals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">trajectoryArr</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]</span>
+
+    <span class="c1"># Sort since we just added some new runs out of order</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">properRunIntervals</span><span class="p">)[:,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">properRunIntervals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">properRunIntervals</span><span class="p">)[</span><span class="n">order</span><span class="p">]</span>
+
+    <span class="c1"># This plots the individual runs within the trajectory, we can get</span>
+    <span class="c1"># a good idea of how finely we are chopping up the trajectory.</span>
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">8.5</span><span class="p">,</span><span class="mf">3.5</span><span class="p">))</span>
+
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">trajectoryArr</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">uniqueRuns</span><span class="p">)):</span>
+            <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">trajectoryArr</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">runIdentityArr</span> <span class="o">==</span> <span class="n">uniqueRuns</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+
+        <span class="c1"># Original trajectory</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">trajectoryArr</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+
+        <span class="c1"># Runs</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">properRunIntervals</span><span class="p">)):</span>
+            <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">trajectoryArr</span><span class="p">[</span><span class="n">properRunIntervals</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+      
+        <span class="c1"># Waiting times</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">waitingTimeIntervals</span><span class="p">)):</span>
+            <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">trajectoryArr</span><span class="p">[</span><span class="n">waitingTimeIntervals</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span><span class="n">waitingTimeIntervals</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Initial run partitioning&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Run partitioning with waiting times&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+    <span class="n">waitingTimeIntervals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">waitingTimeIntervals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">properRunIntervals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">properRunIntervals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+    <span class="c1"># There is the possibility that we have two runs that are directly</span>
+    <span class="c1"># adjacent, ie from [s_1, e_1], [s_2, e_2] where e_1 + 1 == s_2. This</span>
+    <span class="c1"># means we have a waiting time of 0, but it would actually be</span>
+    <span class="c1"># included in the above list because it is of length 0. If we are</span>
+    <span class="c1"># computing statistics of wait times, we should include these, so</span>
+    <span class="c1"># we need to add an empty entry in.</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">properRunIntervals</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">properRunIntervals</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">properRunIntervals</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">waitingTimeIntervals</span> <span class="o">+=</span> <span class="p">[[</span><span class="n">properRunIntervals</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">properRunIntervals</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]]]</span>
+            <span class="n">properRunIntervals</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># Sort since we just added some new waiting times out of order</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">waitingTimeIntervals</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">waitingTimeIntervals</span><span class="p">)[:,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">waitingTimeIntervals</span> <span class="o">=</span> <span class="n">waitingTimeIntervals</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">properRunIntervals</span><span class="p">,</span> <span class="n">waitingTimeIntervals</span></div>
+
+        
+
+
+<div class="viewcode-block" id="discretizeTrajectory">
+<a class="viewcode-back" href="../../autoapi/tracker/index.html#tracker.discretize.discretizeTrajectory">[docs]</a>
+<span class="k">def</span> <span class="nf">discretizeTrajectory</span><span class="p">(</span><span class="n">trajectoryArr</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">velocityThreshold</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">minSteps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">minDistancePerRun</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Discretize a trajectory into straight runs and waiting times.</span>
+
+<span class="sd">    See also `discretizeTrajectoryIndices()` for more information about</span>
+<span class="sd">    the discretization process.</span>
+
+<span class="sd">    The trajectory is constructed by taking the average between the</span>
+<span class="sd">    start and end of successive trajectories; this is required since the</span>
+<span class="sd">    trajectory might drift slightly during the wait time.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    trajectoryArr : numpy.ndarray[N,2]</span>
+<span class="sd">        The points along the trajectory.</span>
+
+<span class="sd">    c : float</span>
+<span class="sd">        The colinearity threshold used to decide where to split the</span>
+<span class="sd">        trajectory to form straight runs. The colinearity is defined</span>
+<span class="sd">        as the dot product between two unit vectors, so can take a</span>
+<span class="sd">        value in the range [-1, 1].</span>
+
+<span class="sd">        Note that any new step of the trajectory is compared against</span>
+<span class="sd">        the *mean* direction vector of the current run, to decide if</span>
+<span class="sd">        it is added to that run or if it should start a new one. Some</span>
+<span class="sd">        works often just compare the new direction vector to the previous</span>
+<span class="sd">        one, but this is more susceptible to give unrepresentative</span>
+<span class="sd">        discretizations in the presence of noise. Some works refer to this</span>
+<span class="sd">        as a &quot;nonlocal&quot; technique [eg. 1].</span>
+
+<span class="sd">        If you&#39;d rather define the threshold in terms of an angle instead</span>
+<span class="sd">        of a scalar, your colinearity threshold will be:</span>
+
+<span class="sd">            cos(theta)</span>
+
+<span class="sd">        where theta is the critical angle.</span>
+
+<span class="sd">    velocityThreshold : float</span>
+<span class="sd">        The velocity threshold used to identify when the process is waiting,</span>
+<span class="sd">        or not moving. The velocity is slightly smoothed before being</span>
+<span class="sd">        compared to the threshold, to avoid missing waiting times because</span>
+<span class="sd">        of instantaneous jitter in the middle of an otherwise stationary</span>
+<span class="sd">        period.</span>
+
+<span class="sd">    dt : float</span>
+<span class="sd">        The time interval between steps in the original trajectory. Used</span>
+<span class="sd">        to calculate the velocity.</span>
+
+<span class="sd">    minSteps : int</span>
+<span class="sd">        The minimum number of steps that must be going in roughly the same</span>
+<span class="sd">        direction to constitute a run.</span>
+
+<span class="sd">    minDistancePerRun : float</span>
+<span class="sd">        The minimum distance a run must measure from beginning point to </span>
+<span class="sd">        end point in order for it to be considered an actual run and not</span>
+<span class="sd">        just a wait time that happens to be drifting.</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    discreteTrajectoryArr : numpy.ndarray[M,2]</span>
+<span class="sd">        The new points of the discretized trajectory.</span>
+
+<span class="sd">    waitingTimeArr : numpy.ndarray[M]</span>
+<span class="sd">        The time spent waiting in between each run.</span>
+
+<span class="sd">    runTimeArr : numpy.ndarray[M-1]</span>
+<span class="sd">        The time spent moving during each run.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Reynolds, A. M., Smith, A. D., Menzel, R., Greggers, U., Reynolds,</span>
+<span class="sd">    D. R., &amp; Riley, J. R. (2007). Displaced Honey Bees Perform Optimal</span>
+<span class="sd">    Scale-Free Search Flights. Ecology, 88(8), 1955–1961.</span>
+<span class="sd">    https://doi.org/10.1890/06-1916.1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the indices of intervals for runs and waits</span>
+    <span class="n">properRunIntervals</span><span class="p">,</span> <span class="n">waitingTimeIntervals</span> <span class="o">=</span> <span class="n">discretizeTrajectoryIndices</span><span class="p">(</span><span class="n">trajectoryArr</span><span class="o">=</span><span class="n">trajectoryArr</span><span class="p">,</span>
+                                                                           <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span>
+                                                                           <span class="n">velocityThreshold</span><span class="o">=</span><span class="n">velocityThreshold</span><span class="p">,</span>
+                                                                           <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+                                                                           <span class="n">minSteps</span><span class="o">=</span><span class="n">minSteps</span><span class="p">,</span>
+                                                                           <span class="n">minDistancePerRun</span><span class="o">=</span><span class="n">minDistancePerRun</span><span class="p">,</span>
+                                                                           <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
+
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">properRunIntervals</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">waitingTimeIntervals</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">trajectoryArr</span><span class="p">)[[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">trajectoryArr</span><span class="p">)])</span><span class="o">*</span><span class="n">dt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        
+    <span class="c1"># Compute the start and end of the runs as the mean between the end of</span>
+    <span class="c1"># the previous run and the start of the current run.</span>
+
+    <span class="c1"># First point is just the first point in the first run interval (no</span>
+    <span class="c1"># averaging)</span>
+    <span class="n">discretePoints</span> <span class="o">=</span> <span class="p">[</span><span class="n">trajectoryArr</span><span class="p">[</span><span class="n">properRunIntervals</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]]</span>
+    <span class="c1"># Now we take the average of the end of the previous run and the start</span>
+    <span class="c1"># of the new one.</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">properRunIntervals</span><span class="p">)):</span>
+        <span class="n">discretePoints</span> <span class="o">+=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">trajectoryArr</span><span class="p">[</span><span class="n">properRunIntervals</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span>
+                                    <span class="n">trajectoryArr</span><span class="p">[</span><span class="n">properRunIntervals</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>
+
+    <span class="c1"># And we add the last point of the last run</span>
+    <span class="n">discretePoints</span> <span class="o">+=</span> <span class="p">[</span><span class="n">trajectoryArr</span><span class="p">[</span><span class="n">properRunIntervals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]]]</span>
+
+    <span class="c1"># If we had L run intervals, we should now have L+1 discrete points</span>
+    <span class="n">discretePoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">discretePoints</span><span class="p">)</span>
+
+    <span class="n">waitingTimes</span> <span class="o">=</span> <span class="p">(</span><span class="n">waitingTimeIntervals</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">waitingTimeIntervals</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">dt</span>
+    <span class="n">runTimes</span> <span class="o">=</span> <span class="p">(</span><span class="n">properRunIntervals</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">properRunIntervals</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">dt</span>
+    
+    <span class="k">return</span> <span class="n">discretePoints</span><span class="p">,</span> <span class="n">waitingTimes</span><span class="p">,</span> <span class="n">runTimes</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Jack Featherstone
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    </body>
+</html>

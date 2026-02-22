@@ -1,0 +1,124 @@
+tracker.sleap_postprocess
+=========================
+
+.. py:module:: tracker.sleap_postprocess
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   tracker.sleap_postprocess.trackSleapFile
+   tracker.sleap_postprocess.cleanMetadata
+   tracker.sleap_postprocess._extractTrackingData
+
+
+Module Contents
+---------------
+
+.. py:function:: trackSleapFile(datasetPath, interpolationLength=10, minScore=0.4, maxDistance=np.inf)
+
+   
+   Load in a SLEAP tracking file (.slp) and extract the trajectory
+   information from it.
+
+   This function will ignore any tracks currently present in the
+   data, and generate new ones, assuming that there is only a
+   single individual across the whole video. This is done using a
+   very simple custom tracking algorithm:
+
+       Add the position of the instance closest to the previous
+       frame to the trajectory.
+
+       If the previous frame(s) are missing, but there is a valid
+       frame less than X frames ago, add the position closest to
+       that previous one, and linearly interpolate the missing points.
+
+       Otherwise, take the instance in the frame that has the best
+       prediction score.
+
+   I think this is a flexible algorithm that is able to interpolate to
+   fill in small gaps, but doesn't introduce too many artifacts
+   from interpolation. The value of X above is the param
+   `interpolationLength`.
+
+   There is really not a lot of documentation how to work directly
+   with the .slp project files, so I had to really experiment
+   to get this to work well. I guess the alternative is to properly
+   export each project as an h5 file, but I didn't want to have
+   to do that for each and every file I have.
+
+   For more information about this function (and how it is used) see the
+   notebook ``00_Preprocessing.ipynb``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: cleanMetadata(metadata)
+
+   
+   Extract manually identified important metadata from
+   the SLEAP metadata.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: _extractTrackingData(datasetPath)
+
+   
+   Load in a SLEAP tracking file (.slp) and extract the trajectory
+   information from it.
+
+   There is really not a lot of documentation how to work directly
+   with the .slp project files, so I had to really experiment
+   to get this to work well. I guess the alternative is to properly
+   export each project as an h5 file, but I didn't want to have
+   to do that for each and every file I have.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+

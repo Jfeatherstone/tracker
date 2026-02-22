@@ -1,0 +1,144 @@
+tracker.load_data
+=================
+
+.. py:module:: tracker.load_data
+
+.. autoapi-nested-parse::
+
+   This file contains the preferred method to load in the preprocessed
+   ant tracking data. This can be applied to either dataset included
+   in this work.
+
+   ..
+       !! processed by numpydoc !!
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   tracker.load_data.loadAntData
+
+
+Module Contents
+---------------
+
+.. py:function:: loadAntData(inputPath, minimumLength=10, smoothingWindow=10, maximumTimeSkip=10, excludeOutliers=True, excludeShortSegments=True, excludeObjects=False, borderPadding=None, inverseBorderPadding=None, debug=False)
+
+   
+   Load in ant trajectory data, preprocessed by the file ``00_PreprocessData.ipynb``.
+
+   While the SLEAP model that tracks the videos has multiple keypoints,
+   the preprocessing averages those three keypoints to get the center of
+   mass over time. You can explore the individual keypoint trajectories
+   if you would like using the raw sleap files, but they are much more
+   susceptible to discretization and jitter.
+
+   By default, the trajectory is smoothed as discussed in the manuscript.
+   This can be adjusted if you'd like with the ``smoothingWindow`` parameter.
+
+   Gaps in the trajectory are also removed; this can be adjusted by
+   changing the ``maximumTimeSkip`` parameter.
+
+   You can remove parts of the trajectory that are close to the boundary
+   as desired using the ``borderPadding`` or ``inverseBorderPadding`` (for
+   only keeping data around the boundary). The boundary is computed for
+   each individual trajectory.
+
+   If part of a segment goes near the boundary, that segment will be
+   split into multiple pieces to avoid having a large gap(s) in the middle.
+
+   :Parameters:
+
+       **inputPath** : str
+           Path to the input h5 file.
+
+       **minimumLength** : float
+           The minimum length of a segment (in seconds) that will
+           be included in the returned list of segments.
+           
+           Only has an effect if `excludeShortSegments=True`.
+           
+           Note that this value is given in *seconds*, or whatever the native
+           unit of time for the trajectory is.
+
+       **smoothingWindow** : int
+           The size of the smoothing window applied to the trajectory
+           data.
+           
+           Note that this value is given in *frames* (or steps, indices, etc.),
+           not the native time unit of the trajectories.
+
+       **maximumTimeSkip** : int
+           The maximum amount of frames that are allowed to be skipped
+           without breaking up a trajectory into multiple pieces. Note
+           that this value is given in *frames* (or steps, indices, etc.),
+           not the native time unit of the trajectories.
+
+       **excludeOutliers** : bool
+           Whether to exclude trials annotated as an outlier during the
+           preprocessing. For more information on why trials might be
+           annotated as an outlier, see file `00_PreprocessData.ipynb`.
+
+       **excludeShortSegments** : bool
+           Whether to apply the provided value of `minimumLength` as a
+           cutoff for the length of segments.
+
+       **excludeObjects** : bool
+           Whether to exclude trials that had an object in the enclosure, 
+           including food, water, etc.
+
+       **borderPadding** : float, optional
+           The size of padding around the borders of the arena to ignore.
+           If a segment is partly contained in this region, only the points
+           which actually fall in the region are deleted.
+           
+           Be careful when calculating speeds, angle turns, etc., as you will
+           have to make sure to ignore the times when the process jumps. The
+           array `timeArr` can be used to determine when this is necessary.
+
+       **inverseBorderPadding** : float, optional
+           The size of padding around the borders of the arena to keep.
+           Any points that are part of a segment that deviate from this
+           region will be deleted, keeping only the trajectories near the
+           boundary.
+           
+           Be careful when calculating speeds, angle turns, etc., as you will
+           have to make sure to ignore the times when the process jumps. The
+           array `timeArr` can be used to determine when this is necessary.
+
+       **debug** : bool
+           Whether to show progress bars during the loading process.
+
+
+
+   :Returns:
+
+       **dataArr** : list of np.array[N_i, 2]
+           The list of positions of the ant throughout time for each segment.
+
+       **timeArr** : list of np.array[N_i]
+           The list of time points at which each position in dataArr[i] is
+           sampled. The first data point is the actual time within
+           the original video at which this trajectory starts, and thus can
+           be used to determine the order of segments within a trial.
+
+       **metadataArr** : list of dict
+           The dictionaries containing metadata information about the tracking
+           procedure, experimental conditions, and preprocessing steps for
+           each segment.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+

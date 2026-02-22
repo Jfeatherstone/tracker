@@ -1,0 +1,216 @@
+tracker.discretize
+==================
+
+.. py:module:: tracker.discretize
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   tracker.discretize.discretizeTrajectoryIndices
+   tracker.discretize.discretizeTrajectory
+
+
+Module Contents
+---------------
+
+.. py:function:: discretizeTrajectoryIndices(trajectoryArr, c=1, velocityThreshold=1, dt=1, minSteps=1, minDistancePerRun=0, debug=False)
+
+   
+   Discretize a trajectory as if it were a run-and-tumble process,
+   with waiting times before each tumble. Return the indices of
+   the run or waiting time to which each point in the original trajectory
+   belongs.
+
+   Trajectories are first segmented by finding regions where the
+   trajectory has very low velocity (so the process is probably
+   standing still). Then, each of these segments is split based
+   on orientation to get relatively straight runs. Afterwards, we do
+   some clean up to make sure the detected runs actually seem like runs.
+
+   The process of discretizing a continuous trajectory (even if it is
+   discretly sampled) is very subjective, and care should be taken
+   to justify the choices of parameters for this discretization
+   algorithm.
+
+   :Parameters:
+
+       **trajectoryArr** : numpy.ndarray[N,2]
+           The points along the trajectory.
+
+       **c** : float
+           The colinearity threshold used to decide where to split the
+           trajectory to form straight runs. The colinearity is defined
+           as the dot product between two unit vectors, so can take a
+           value in the range [-1, 1].
+           
+           Note that any new step of the trajectory is compared against
+           the *mean* direction vector of the current run, to decide if
+           it is added to that run or if it should start a new one. Some
+           works often just compare the new direction vector to the previous
+           one, but this is more susceptible to give unrepresentative
+           discretizations in the presence of noise. Some works refer to this
+           as a "nonlocal" technique [eg. 1].
+           
+           If you'd rather define the threshold in terms of an angle instead
+           of a scalar, your colinearity threshold will be:
+           
+               c = cos(theta)
+           
+           where theta is the critical angle.
+
+       **velocityThreshold** : float
+           The velocity threshold used to identify when the process is waiting,
+           or not moving. The velocity is slightly smoothed before being
+           compared to the threshold, to avoid missing waiting times because
+           of instantaneous jitter in the middle of an otherwise stationary
+           period.
+
+       **dt** : float
+           The time interval between steps in the original trajectory. Used
+           to calculate the velocity.
+
+       **minSteps** : int
+           The minimum number of steps that must be going in roughly the same
+           direction to constitute a run.
+
+       **minDistancePerRun** : float
+           The minimum distance a run must measure from beginning point to 
+           end point in order for it to be considered an actual run and not
+           just a wait time that happens to be drifting.
+
+       **debug** : bool
+           Whether to plot debug information; helpful to deciding on good
+           parameter values.
+
+
+
+   :Returns:
+
+       **runIntervals** : numpy.ndarray[M,2]
+           The indices of the start ([:,0]) and end ([:,1]) of each discrete
+           run.
+
+       **waitingTimes** : numpy.ndarray[L,2]
+           The indices of the start ([:,0]) and end ([:,1]) of each discrete
+           waiting time.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   [1] Reynolds, A. M., Smith, A. D., Menzel, R., Greggers, U., Reynolds,
+   D. R., & Riley, J. R. (2007). Displaced Honey Bees Perform Optimal
+   Scale-Free Search Flights. Ecology, 88(8), 1955–1961.
+   https://doi.org/10.1890/06-1916.1
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: discretizeTrajectory(trajectoryArr, c=1, velocityThreshold=1, dt=1, minSteps=1, minDistancePerRun=0, debug=False)
+
+   
+   Discretize a trajectory into straight runs and waiting times.
+
+   See also `discretizeTrajectoryIndices()` for more information about
+   the discretization process.
+
+   The trajectory is constructed by taking the average between the
+   start and end of successive trajectories; this is required since the
+   trajectory might drift slightly during the wait time.
+
+   :Parameters:
+
+       **trajectoryArr** : numpy.ndarray[N,2]
+           The points along the trajectory.
+
+       **c** : float
+           The colinearity threshold used to decide where to split the
+           trajectory to form straight runs. The colinearity is defined
+           as the dot product between two unit vectors, so can take a
+           value in the range [-1, 1].
+           
+           Note that any new step of the trajectory is compared against
+           the *mean* direction vector of the current run, to decide if
+           it is added to that run or if it should start a new one. Some
+           works often just compare the new direction vector to the previous
+           one, but this is more susceptible to give unrepresentative
+           discretizations in the presence of noise. Some works refer to this
+           as a "nonlocal" technique [eg. 1].
+           
+           If you'd rather define the threshold in terms of an angle instead
+           of a scalar, your colinearity threshold will be:
+           
+               cos(theta)
+           
+           where theta is the critical angle.
+
+       **velocityThreshold** : float
+           The velocity threshold used to identify when the process is waiting,
+           or not moving. The velocity is slightly smoothed before being
+           compared to the threshold, to avoid missing waiting times because
+           of instantaneous jitter in the middle of an otherwise stationary
+           period.
+
+       **dt** : float
+           The time interval between steps in the original trajectory. Used
+           to calculate the velocity.
+
+       **minSteps** : int
+           The minimum number of steps that must be going in roughly the same
+           direction to constitute a run.
+
+       **minDistancePerRun** : float
+           The minimum distance a run must measure from beginning point to 
+           end point in order for it to be considered an actual run and not
+           just a wait time that happens to be drifting.
+
+
+
+   :Returns:
+
+       **discreteTrajectoryArr** : numpy.ndarray[M,2]
+           The new points of the discretized trajectory.
+
+       **waitingTimeArr** : numpy.ndarray[M]
+           The time spent waiting in between each run.
+
+       **runTimeArr** : numpy.ndarray[M-1]
+           The time spent moving during each run.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   [1] Reynolds, A. M., Smith, A. D., Menzel, R., Greggers, U., Reynolds,
+   D. R., & Riley, J. R. (2007). Displaced Honey Bees Perform Optimal
+   Scale-Free Search Flights. Ecology, 88(8), 1955–1961.
+   https://doi.org/10.1890/06-1916.1
+
+   .. only:: latex
+
+      
+
+
+   ..
+       !! processed by numpydoc !!
+
