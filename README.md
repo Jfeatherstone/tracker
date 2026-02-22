@@ -27,4 +27,4 @@ You can now load and work with the data with the tools provided by this package.
     # debug=True gives a nice progress bar and status messages
     dataArr, timeArr, metadataArr = loadAntData(dataFile, debug=True)
 
-For more information, please see the documentation.
+For more information, please see the [documentation](https://jfeatherstone.github.io/tracker/build/html/).
