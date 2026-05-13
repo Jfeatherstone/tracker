@@ -526,9 +526,9 @@ def computeMSD(trajectory, t=None, minLag=0, maxLag=30, nbins=30, logbins=True):
     # Setup our lag arrays and the bins we will be adding data to throughout
     # the process.
     if not logbins:
-        lagArr = (np.linspace(minLag, maxLag, nbins)/dt).astype(np.int64)
+        lagArr = np.floor(np.linspace(minLag, maxLag, nbins)/dt).astype(np.int64)
     else:
-        lagArr = (np.logspace(np.log10(minLag/dt), np.log10(maxLag/dt), nbins)).astype(np.int64)
+        lagArr = np.floor(np.logspace(np.log10(minLag), np.log10(maxLag), nbins, base=10) / dt).astype(np.int64)
 
     #lagArr = np.unique(lagArr)
 
@@ -540,6 +540,13 @@ def computeMSD(trajectory, t=None, minLag=0, maxLag=30, nbins=30, logbins=True):
         # First, we need to discretize the segment
         data = segmentList[i]
         time = timeList[i]
+        # Note that there can be some issues here if you are using
+        # float32 types, especially for very large (1000+) lags. If you
+        # can, try to use float64 where possible.
+        # To fix data that is already in float32 type, we can make sure
+        # that the time array has values that are only proper multiples of
+        # the time difference.
+        time = np.around(time / dt) * dt
 
         # Compute the autocorrelation
         for k in range(len(lagArr)):
@@ -548,10 +555,13 @@ def computeMSD(trajectory, t=None, minLag=0, maxLag=30, nbins=30, logbins=True):
             # For shorter runs, we can only compute some of the smaller bins
             if lag > len(data) - 1:
                 break
- 
+
             timeDiffArr = time[lag:] - time[:len(time)-lag]
-            timeDiffIndices = np.around(timeDiffArr / dt).astype(np.int64)
-            goodIndices = np.where(timeDiffIndices == lag)[0]
+            goodIndices = np.where(timeDiffArr - lag*dt < dt)[0]
+            #timeDiffIndices = np.floor(timeDiffArr / dt).astype(np.int64)
+            #goodIndices = np.where(timeDiffIndices == lag)[0]
+
+            #print(lag, goodIndices)
 
             if (len(goodIndices) == 0) or (lag == 0):
                 continue

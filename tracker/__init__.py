@@ -10,6 +10,7 @@ from .load_data import *
 from .utils import *
 from .discretize import *
 from .analysis import *
+from .simulate import *
 
 # We only want to import the sleap postprocessing scripts if we have
 # sleap installed
@@ -17,7 +18,7 @@ try:
     from .sleap_postprocess import *
 
 except:
-    print('From tracker/_init__.py:')
+    print('From tracker/__init__.py:')
     print('SLEAP not detected; make sure to install SLEAP if intending to use postprocessing notebook. Otherwise, ignore this message.')
 
 

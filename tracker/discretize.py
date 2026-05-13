@@ -328,19 +328,22 @@ def discretizeTrajectoryIndices(trajectoryArr, c=1, velocityThreshold=1, dt=1, m
         plt.show()
 
 
-    waitingTimeIntervals = np.array(waitingTimeIntervals, dtype=np.int64)
     properRunIntervals = np.array(properRunIntervals, dtype=np.int64)
 
     # There is the possibility that we have two runs that are directly
     # adjacent, ie from [s_1, e_1], [s_2, e_2] where e_1 + 1 == s_2. This
-    # means we have a waiting time of 0, but it would actually be
+    # means we have a waiting time of 0, but it would not actually be
     # included in the above list because it is of length 0. If we are
     # computing statistics of wait times, we should include these, so
     # we need to add an empty entry in.
     for i in range(1, len(properRunIntervals)):
         if properRunIntervals[i][0] == properRunIntervals[i-1][1] + 1:
+            #print([[properRunIntervals[i][0] - 1, properRunIntervals[i][0]]])
+
             waitingTimeIntervals += [[properRunIntervals[i][0] - 1, properRunIntervals[i][0]]]
             properRunIntervals[i-1][1] += 1
+
+    waitingTimeIntervals = np.array(waitingTimeIntervals, dtype=np.int64)
 
     # Sort since we just added some new waiting times out of order
     if len(waitingTimeIntervals) > 0:
