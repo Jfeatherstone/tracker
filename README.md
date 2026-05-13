@@ -9,7 +9,7 @@ experiments.
 Usage
 ---
 
-The dataset can be retrieved from Zenodo. It will include a copy of the
+The dataset can be retrieved from [Zenodo](https://zenodo.org/records/18728550). It will include a copy of the
 code as well, though this repository will likely be updated more regularly.
 
 Clone this repository, and place the two hdf5 data files from the Zenodo
@@ -17,7 +17,7 @@ repository in the `data` directory:
 
     $ git clone https://github.com/Jfeatherstone/tracker
     $ cd tracker
-    $ curl <zenodo_link> --output ./zenodo_data.zip
+    $ curl https://zenodo.org/records/18728550/files/ant_tracking_2026-02-22.zip --output ./zenodo_data.zip
     $ unzip zenodo_data.zip && mv zenodo_data/data .
 
 You can now load and work with the data with the tools provided by this package.
